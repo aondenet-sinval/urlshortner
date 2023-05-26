@@ -47,11 +47,11 @@ app.post('/api/shorturl', (req, res) => {
     return res.status(400).json({ error: 'invalid url' });
   }
   // Gere um número aleatório como URL curto
-  const shortUrl = Math.floor(Math.random() * 100000).toString();
+  const shortUrl = Math.floor(Math.random() * 100000)
   // Salva a URL original e a URL curta
   urlData[shortUrl] = url;
   // Retorna a resposta em JSON com as propriedades original_url e short_url
-  res.json({ url, short_url: shortUrl });
+  res.json({ original_url: url, short_url: shortUrl });
 });
 // Rota GET para redirecionar o usuário para a URL original
 app.get('/api/shorturl/:short_url', (req, res) => {
