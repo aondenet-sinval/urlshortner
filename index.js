@@ -24,7 +24,7 @@ function verificarURL(url) {
     var resposta = { error: 'invalid url' };
     return JSON.stringify(resposta);
   } else {
-    return url;
+    return 1;
   }
 }
 app.use(cors());
@@ -53,7 +53,7 @@ app.post('/api/shorturl', (req, res) => {
   }
   const validarUrl = verificarURL(url);
   console.log('validarUrl ', validarUrl);
-  if (validarUrl != url) {
+  if (validarUrl != 1) {
     return res.status(400).json({ error: 'invalid url' });
   }
   // Gere um número aleatório como URL curto
