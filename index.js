@@ -6,23 +6,21 @@ const dns = require('dns');
 const bodyParser = require('body-parser')
 const port = process.env.PORT || 3000;
 
-// function verificarURL(url) {
-//   const hostname = new URL(url).hostname;
-//
-//   dns.lookup(hostname, (err, address) => {
-//     if (err) {
-//       console.error(err);
-//       return;
-//     }
-//     return url
-//   });
-// }
+function verificarDNS(url) {
+  const hostname = new URL(url).hostname;
+
+  dns.lookup(hostname, (err, address) => {
+    if (err) {
+      return err
+    }
+    return 1
+  });
+}
 function verificarURL(url) {
   var urlPattern = /^(https?:\/\/)?(www\.)?([a-z0-9-]+\.)+[a-z]{2,}(\/.*)?$/i;
 
   if (!urlPattern.test(url)) {
-    var resposta = { error: 'invalid url' };
-    return JSON.stringify(resposta);
+    return 0
   } else {
     return 1;
   }
@@ -52,8 +50,9 @@ app.post('/api/shorturl', (req, res) => {
     return res.status(400).json({ error: 'A URL é obrigatória.' });
   }
   const validarUrl = verificarURL(url);
+  const validarDns = verificarDNS(url, res);
   console.log('validarUrl ', validarUrl);
-  if (validarUrl != 1) {
+  if ((validarUrl != 1) || (validarDns === 'Invalid URL')) {
     return res.status(400).json({ error: 'invalid url' });
   }
   // Gere um número aleatório como URL curto
