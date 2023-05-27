@@ -4,14 +4,14 @@ const cors = require('cors');
 const app = express();
 const dns = require('dns');
 const bodyParser = require('body-parser')
+const url = require('url');
 const port = process.env.PORT || 3000;
 
 function verificarDNS(url) {
-  const hostname = new URL(url).hostname;
-
+  const hostname = new URL(url).href
   dns.lookup(hostname, (err, address) => {
     if (err) {
-      return err
+      return 0
     }
     return 1
   });
@@ -22,6 +22,7 @@ function verificarURL(url) {
   if (!urlPattern.test(url)) {
     return 0
   } else {
+    verificarDNS(url)
     return 1;
   }
 }
@@ -43,16 +44,16 @@ app.use(bodyParser.urlencoded({extended: false}))
 const urlData = {};
 
 // Rota POST para /api/shorturl
-app.post('/api/shorturl', (req, res) => {
+app.post('/api/shorturl', (req, res, next) => {
   const { url } = req.body;
   // Verifica se a URL original foi fornecida
   if (!url) {
     return res.status(400).json({ error: 'A URL é obrigatória.' });
   }
+  // Verifica se o url válido possui ip válido
   const validarUrl = verificarURL(url);
-  const validarDns = verificarDNS(url, res);
-  console.log('validarUrl ', validarUrl);
-  if ((validarUrl != 1) || (validarDns === 'Invalid URL')) {
+  // console.log('validarUrl ', validarUrl);
+  if (validarUrl === 0) {
     return res.status(400).json({ error: 'invalid url' });
   }
   // Gere um número aleatório como URL curto
@@ -60,7 +61,9 @@ app.post('/api/shorturl', (req, res) => {
   // Salva a URL original e a URL curta
   urlData[shortUrl] = url;
   // Retorna a resposta em JSON com as propriedades original_url e short_url
-  res.json({ original_url: url, short_url: shortUrl });
+  if (url && shortUrl) {
+    return res.json({ original_url: url, short_url: shortUrl });
+  }
 });
 // Rota GET para redirecionar o usuário para a URL original
 app.get('/api/shorturl/:short_url', (req, res) => {
