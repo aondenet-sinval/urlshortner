@@ -54,7 +54,7 @@ app.post('/api/shorturl', (req, res, next) => {
   const validarUrl = verificarURL(url);
   // console.log('validarUrl ', validarUrl);
   if (validarUrl === 0) {
-    return res.status(400).json({ error: 'invalid url' });
+    return res.json({ error: 'invalid url' });
   }
   // Gere um número aleatório como URL curto
   const shortUrl = Math.floor(Math.random() * 100000)
